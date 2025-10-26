@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>ls -la</title>
+<link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+<div id="personal-public-article-body"><div class="mdContent-inner">
+    <h1>sshの設定</h1>
+    <h1 data-sourcepos="1:1-1:8">
+<span id="概要" class="fragment"></span>概要</h1>
+<h2 data-sourcepos="8:1-8:48">
+<span id="プロトコルのバージョン必須" class="fragment"></span>
+</a>プロトコルのバージョン（必須）</h2>
+<p data-sourcepos="10:1-11:152">Protocol 1は中間者攻撃に問題があるため、Protocol 2を使用しましょう<br>
+OpenSSH 7.6以上はデフォルトで2になっています</p>
+<div class="code-frame" data-lang="conf" data-sourcepos="13:1-15:3">
+<div class="code-lang"><span class="bold">/etc/ssh/sshd_config</span></div>
+<div class="code-copy"><div class="code-copy__message" style="display: none;">Copied!</div><button class="code-copy__button" style="display: none;"><span class="fa fa-fw fa-clipboard"></span></button></div><div class="highlight"><pre><code><span class="n">Protocol</span> <span class="m">2</span>
+</code></pre></div>
+</div>
+<h2 data-sourcepos="17:1-17:45">
+<span id="パスワード認証を無効必須" class="fragment"></span><a href="#%E3%83%91%E3%82%B9%E3%83%AF%E3%83%BC%E3%83%89%E8%AA%8D%E8%A8%BC%E3%82%92%E7%84%A1%E5%8A%B9%E5%BF%85%E9%A0%88"></a>パスワード認証を無効（必須）</h2>
+<p data-sourcepos="19:1-20:144">どうしてもパスワード認証しなければならない場合は、安全なパスワードを設定してください<br>
+IPAの<a href="https://www.ipa.go.jp/chocotto/pw.html" rel="nofollow noopener" target="_blank">チョコっとプラスパスワード</a>や日本語パスワードなどが参考になります</p>
+<div class="code-frame" data-lang="conf" data-sourcepos="22:1-24:3">
+<div class="code-lang"><span class="bold">/etc/ssh/sshd_config</span></div>
+<div class="code-copy"><div class="code-copy__message" style="display: none;">Copied!</div><button class="code-copy__button" style="display: none;"><span class="fa fa-fw fa-clipboard"></span></button></div><div class="highlight"><pre><code><span class="n">PasswordAuthentication</span> <span class="n">no</span>
+</code></pre></div>
+</div>
+<h2 data-sourcepos="26:1-26:61">
+<span id="チャレンジレスポンス認証を無効必須" class="fragment"></span><a href="#%E3%83%81%E3%83%A3%E3%83%AC%E3%83%B3%E3%82%B8%E3%83%AC%E3%82%B9%E3%83%9D%E3%83%B3%E3%82%B9%E8%AA%8D%E8%A8%BC%E3%82%92%E7%84%A1%E5%8A%B9%E5%BF%85%E9%A0%88"></a>チャレンジ/レスポンス認証を無効（必須）</h2>
+<p data-sourcepos="28:1-28:175"><a href="http://e-words.jp/w/%E3%83%81%E3%83%A3%E3%83%AC%E3%83%B3%E3%82%B8-%E3%83%AC%E3%82%B9%E3%83%9D%E3%83%B3%E3%82%B9%E8%AA%8D%E8%A8%BC.html" rel="nofollow noopener" target="_blank">チャレンジ/レスポンス認証</a></p>
+<p data-sourcepos="30:1-30:177">パスワード認証を安全に行えるようにするための仕組みですが、パスワード認証を無効にするのが前提なので、こちらも無効とする</p>
+<div class="code-frame" data-lang="text" data-sourcepos="32:1-34:3"><div class="code-copy"><div class="code-copy__message" style="display: none;">Copied!</div><button class="code-copy__button" style="display: none;"><span class="fa fa-fw fa-clipboard"></span></button></div><div class="highlight"><pre><code>ChallengeResponseAuthentication no
+</code></pre></div></div>
+<h2 data-sourcepos="36:1-36:42">
+<span id="空パスワードを無効必須" class="fragment"></span><a href="#%E7%A9%BA%E3%83%91%E3%82%B9%E3%83%AF%E3%83%BC%E3%83%89%E3%82%92%E7%84%A1%E5%8A%B9%E5%BF%85%E9%A0%88"></a>空パスワードを無効（必須）</h2>
+<p data-sourcepos="38:1-38:41">開発中はいいが、本番環境はNG</p>
+<div class="code-frame" data-lang="conf" data-sourcepos="40:1-42:3">
+<div class="code-lang"><span class="bold">/etc/ssh/sshd_config</span></div>
+<div class="code-copy"><div class="code-copy__message" style="display: none;">Copied!</div><button class="code-copy__button" style="display: none;"><span class="fa fa-fw fa-clipboard"></span></button></div><div class="highlight"><pre><code><span class="n">PermitEmptyPasswords</span> <span class="n">no</span>
+</code></pre></div>
+</div>
+<h2 data-sourcepos="44:1-44:52">
+<span id="rootユーザのログインを禁止必須" class="fragment"></span><a href="#root%E3%83%A6%E3%83%BC%E3%82%B6%E3%81%AE%E3%83%AD%E3%82%B0%E3%82%A4%E3%83%B3%E3%82%92%E7%A6%81%E6%AD%A2%E5%BF%85%E9%A0%88"></a>rootユーザのログインを禁止（必須）</h2>
+<p data-sourcepos="46:1-46:101">基本rootユーザで操作しないのが原則なので、rootユーザのログインから禁止</p>
+<div class="code-frame" data-lang="conf" data-sourcepos="48:1-50:3">
+<div class="code-lang"><span class="bold">/etc/ssh/sshd_config</span></div>
+<div class="code-copy"><div class="code-copy__message" style="display: none;">Copied!</div><button class="code-copy__button" style="display: none;"><span class="fa fa-fw fa-clipboard"></span></button></div><div class="highlight"><pre><code><span class="n">PermitRootLogin</span> <span class="n">no</span>
+</code></pre></div>
+</div>
+<h2 data-sourcepos="52:1-52:30">
+<span id="ログレベル必須" class="fragment"></span><a href="#%E3%83%AD%E3%82%B0%E3%83%AC%E3%83%99%E3%83%AB%E5%BF%85%E9%A0%88"></a>ログレベル（必須）</h2>
+<p data-sourcepos="54:1-55:72">ログインに関するログ(成功、失敗)が出力されるようにする<br>
+問題が発生した時に状況をトレースしやすくするため</p>
+<div class="code-frame" data-lang="conf" data-sourcepos="57:1-60:3">
+<div class="code-lang"><span class="bold">/etc/ssh/sshd_config</span></div>
+<div class="code-copy"><div class="code-copy__message" style="display: none;">Copied!</div><button class="code-copy__button" style="display: none;"><span class="fa fa-fw fa-clipboard"></span></button></div><div class="highlight"><pre><code><span class="n">SyslogFacility</span> <span class="n">AUTHPRIV</span>
+<span class="n">LogLevel</span> <span class="n">VERBOSE</span>
+</code></pre></div>
+</div>
+<p data-sourcepos="62:1-62:188">※あわせて<a href="https://www.rsyslog.com/doc/v8-stable/configuration/templates.html" rel="nofollow noopener" target="_blank">rsyslogのログテンプレート</a>を設定しておくと情報が過不足にならずに済みます</p>
+<h2 data-sourcepos="64:1-64:54">
+<span id="接続できるユーザを制限する任意" class="fragment"></span><a href="#%E6%8E%A5%E7%B6%9A%E3%81%A7%E3%81%8D%E3%82%8B%E3%83%A6%E3%83%BC%E3%82%B6%E3%82%92%E5%88%B6%E9%99%90%E3%81%99%E3%82%8B%E4%BB%BB%E6%84%8F"></a>接続できるユーザを制限する（任意）</h2>
+<div class="code-frame" data-lang="conf" data-sourcepos="66:1-68:3">
+<div class="code-lang"><span class="bold">/etc/ssh/sshd_config</span></div>
+<div class="code-copy"><div class="code-copy__message" style="display: none;">Copied!</div><button class="code-copy__button" style="display: none;"><span class="fa fa-fw fa-clipboard"></span></button></div><div class="highlight"><pre><code><span class="n">AllowUsers</span> <span class="n">work_user</span>
+</code></pre></div>
+</div>
+<h2 data-sourcepos="70:1-70:63">
+<span id="特定のユーザからの接続を拒否する任意" class="fragment"></span><a href="#%E7%89%B9%E5%AE%9A%E3%81%AE%E3%83%A6%E3%83%BC%E3%82%B6%E3%81%8B%E3%82%89%E3%81%AE%E6%8E%A5%E7%B6%9A%E3%82%92%E6%8B%92%E5%90%A6%E3%81%99%E3%82%8B%E4%BB%BB%E6%84%8F"></a>特定のユーザからの接続を拒否する（任意）</h2>
+<p data-sourcepos="72:1-73:93">AWS EC2のようにデフォルトユーザ（<code>ec2-user</code>）が知れ渡っているような場合は、<br>
+デフォルトユーザを削除したり、接続禁止設定しとくと安全でしょう</p>
+<div class="code-frame" data-lang="conf" data-sourcepos="75:1-77:3">
+<div class="code-lang"><span class="bold">/etc/ssh/sshd_config</span></div>
+<div class="code-copy"><div class="code-copy__message" style="display: none;">Copied!</div><button class="code-copy__button" style="display: none;"><span class="fa fa-fw fa-clipboard"></span></button></div><div class="highlight"><pre><code><span class="n">DenyUsers</span> <span class="n">ec2</span>-<span class="n">user</span>
+</code></pre></div>
+</div>
+<h2 data-sourcepos="79:1-79:42">
+<span id="ssh接続ポートの変更任意" class="fragment"></span><a href="#ssh%E6%8E%A5%E7%B6%9A%E3%83%9D%E3%83%BC%E3%83%88%E3%81%AE%E5%A4%89%E6%9B%B4%E4%BB%BB%E6%84%8F"></a>SSH接続ポートの変更（任意）</h2>
+<p data-sourcepos="81:1-82:118">デフォルト22番ポート以外の任意のポートに割り当てることで攻撃を遅らせることができます<br>
+<strong>※割り当て予定のポートを事前にファイアウオールで許可するようにしてください！</strong></p>
+<div class="code-frame" data-lang="conf" data-sourcepos="84:1-86:3">
+<div class="code-lang"><span class="bold">/etc/ssh/sshd_config</span></div>
+<div class="code-copy"><div class="code-copy__message" style="display: none;">Copied!</div><button class="code-copy__button" style="display: none;"><span class="fa fa-fw fa-clipboard"></span></button></div><div class="highlight"><pre><code><span class="n">Port</span> <span class="m">1022</span>
+</code></pre></div>
+</div>
+<h2 data-sourcepos="88:1-88:51">
+<span id="sshポートフォワードの禁止任意" class="fragment"></span><a href="#ssh%E3%83%9D%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%AF%E3%83%BC%E3%83%89%E3%81%AE%E7%A6%81%E6%AD%A2%E4%BB%BB%E6%84%8F"></a>SSHポートフォワードの禁止（任意）</h2>
+<p data-sourcepos="90:1-90:102">SSH接続を経由して、他のサーバに転送通信（トンネリング）をできなくする</p>
+<div class="code-frame" data-lang="conf" data-sourcepos="92:1-97:3">
+<div class="code-lang"><span class="bold">/etc/ssh/sshd_config</span></div>
+<div class="code-copy"><div class="code-copy__message" style="display: none;">Copied!</div><button class="code-copy__button" style="display: none;"><span class="fa fa-fw fa-clipboard"></span></button></div><div class="highlight"><pre><code><span class="n">AllowTcpForwarding</span> <span class="n">no</span>
+<span class="n">AllowStreamLocalForwarding</span> <span class="n">no</span>
+<span class="n">GatewayPorts</span> <span class="n">no</span>
+<span class="n">PermitTunnel</span> <span class="n">no</span>
+</code></pre></div>
+</div>
+<h1 data-sourcepos="101:1-101:8">
+<span id="参考" class="fragment"></span><a href="#%E5%8F%82%E8%80%83"></a>参考</h1>
+<p data-sourcepos="103:1-103:36"><iframe id="qiita-embed-content__3e85cdd4ae2f1149b7ea57973655d790" src="https://qiita.com/embed-contents/link-card#qiita-embed-content__3e85cdd4ae2f1149b7ea57973655d790" data-content="https%3A%2F%2Fwww.ssh.com%2Fssh%2Fsshd_config%2F" frameborder="0" scrolling="no" loading="lazy" style="width:100%;" height="112">
+</iframe>
+</p>
+</div></div>
+
+
+</body>

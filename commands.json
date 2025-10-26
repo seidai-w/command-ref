@@ -1,0 +1,23 @@
+[
+  {
+    "category": "Linux",
+    "commands": [
+      { "command": "ls -la", "description": "すべてのファイルを詳細表示", "detail": "docs/linux/ls.html" },
+      { "command": "cat", "description": "ファイル内容を表示", "detail": "docs/linux/cat.html" },
+      { "command": "uname -a", "description": "システム情報を表示", "detail": "docs/linux/uname.html" },
+      { "command": "pwd", "description": "", "detail": "docs/linux/pwd.html" }
+    ]
+  },
+  {
+    "category": "Git",
+    "commands": [
+      { "command": "git status", "description": "現在のリポジトリの状態を表示", "detail": "docs/git/git_status.md" }
+    ]
+  },
+  {
+    "category": "Docker",
+    "commands": [
+      { "command": "docker ps", "description": "実行中のコンテナを一覧表示", "detail": "docs/docker/docker_ps.md" }
+    ]
+  }
+]
