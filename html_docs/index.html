@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>GNU Info Manuals Index</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.result { display: flex; flex-wrap: wrap; gap: 0.5em; }
+.hidden { display: none; }
+</style>
+</head>
+<body>
+<h1>GNU Info Manuals 一覧 🔍</h1>
+<p>検索ボックスにキーワードを入力すると、下の一覧が絞り込み表示されます。</p>
+<input type="text" id="searchBox" placeholder="例: bash, coreutils, grep ...">
+<div id="results" class="result">
+<a class='manual' href='bc.html'>bc</a>
+<a class='manual' href='diffutils.html'>diffutils</a>
+<a class='manual' href='ed.html'>ed</a>
+<a class='manual' href='find-maint.html'>find-maint</a>
+<a class='manual' href='find.info-1.gz.html'>find.info-1.gz</a>
+<a class='manual' href='find.info-2.gz.html'>find.info-2.gz</a>
+<a class='manual' href='find.html'>find</a>
+<a class='manual' href='gnupg.info-1.gz.html'>gnupg.info-1.gz</a>
+<a class='manual' href='gnupg.info-2.gz.html'>gnupg.info-2.gz</a>
+<a class='manual' href='gnupg.info-3.gz.html'>gnupg.info-3.gz</a>
+<a class='manual' href='gnupg.html'>gnupg</a>
+<a class='manual' href='grep.html'>grep</a>
+<a class='manual' href='gzip.html'>gzip</a>
+<a class='manual' href='info-stnd.html'>info-stnd</a>
+<a class='manual' href='nano.html'>nano</a>
+<a class='manual' href='rluserman.html'>rluserman</a>
+<a class='manual' href='screen.info-1.gz.html'>screen.info-1.gz</a>
+<a class='manual' href='screen.info-2.gz.html'>screen.info-2.gz</a>
+<a class='manual' href='screen.info-3.gz.html'>screen.info-3.gz</a>
+<a class='manual' href='screen.info-4.gz.html'>screen.info-4.gz</a>
+<a class='manual' href='screen.info-5.gz.html'>screen.info-5.gz</a>
+<a class='manual' href='screen.info-6.gz.html'>screen.info-6.gz</a>
+<a class='manual' href='screen.html'>screen</a>
+<a class='manual' href='sed.html'>sed</a>
+<a class='manual' href='texi2any_api.html'>texi2any_api</a>
+<a class='manual' href='texi2any_internals.html'>texi2any_internals</a>
+<a class='manual' href='texinfo.info-1.gz.html'>texinfo.info-1.gz</a>
+<a class='manual' href='texinfo.info-2.gz.html'>texinfo.info-2.gz</a>
+<a class='manual' href='texinfo.info-3.gz.html'>texinfo.info-3.gz</a>
+<a class='manual' href='time.html'>time</a>
+<a class='manual' href='wget.html'>wget</a>
+</div>
+<hr>
+<p>Generated on <script>document.write(new Date().toLocaleString());</script></p>
+
+<script>
+const searchBox = document.getElementById('searchBox');
+const manuals = document.querySelectorAll('.manual');
+
+searchBox.addEventListener('input', function() {
+  const query = this.value.toLowerCase();
+  manuals.forEach(link => {
+    const text = link.textContent.toLowerCase();
+    link.classList.toggle('hidden', !text.includes(query));
+  });
+});
+</script>
+
+</body>
+</html>
