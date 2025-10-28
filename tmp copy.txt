@@ -1,0 +1,127 @@
+import pandas as pd
+import re
+from pathlib import Path
+
+# ========= 設定 =========
+INPUT_FILE = "linux_commands.xlsx"   # or .csv
+OUTPUT_DIR = Path("output_pages")
+CSS_PATH = "../../style.css"
+# ========================
+
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+# Excel or CSV 読み込み
+if INPUT_FILE.endswith(".xlsx"):
+    df = pd.read_excel(INPUT_FILE)
+else:
+    df = pd.read_csv(INPUT_FILE)
+
+df.columns = [c.strip() for c in df.columns]
+
+# HTML テンプレート
+HTML_TEMPLATE = """<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>{title}</title>
+<link rel="stylesheet" href="{css_path}">
+<style>
+.arg-table {{
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 1em;
+}}
+.arg-table th, .arg-table td {{
+  border: 1px solid #ccc;
+  padding: 4px 8px;
+  vertical-align: top;
+}}
+.arg-table th {{
+  background-color: #f5f5f5;
+}}
+pre {{
+  white-space: pre-wrap;
+  background: #f8f8f8;
+  padding: 0.5em;
+  border-radius: 4px;
+}}
+</style>
+</head>
+<body>
+<h1>{command}</h1>
+
+<h2>簡易説明</h2>
+<p>{summary}</p>
+
+<h2>詳細</h2>
+<pre>{detail}</pre>
+
+<h2>Usage</h2>
+<pre><code>{usage}</code></pre>
+
+<h2>実行例</h2>
+<pre><code>{example}</code></pre>
+
+<h2>条件など</h2>
+<pre>{condition}</pre>
+
+<h2>引数</h2>
+{args_table}
+
+<h2>補足情報</h2>
+<pre>{extra}</pre>
+
+<p><a href="index.html">Linuxトップに戻る</a></p>
+</body>
+</html>
+"""
+
+# 引数テキストを <table> に整形する関数
+def parse_arguments(arg_text: str) -> str:
+    if not arg_text or pd.isna(arg_text):
+        return "<p>（該当なし）</p>"
+    
+    rows = []
+    # 1行ずつ正規表現で分割（例: "-a, --all  do not ignore..."）
+    for line in arg_text.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        m = re.match(r"^([-\w, =\[\]]+)\s+(.*)$", line)
+        if m:
+            opt, desc = m.groups()
+            rows.append(f"<tr><td>{opt}</td><td>{desc}</td></tr>")
+        else:
+            # インデント行は前の説明の続き
+            if rows:
+                rows[-1] = rows[-1].replace("</td></tr>", f"<br>{line}</td></tr>")
+    
+    if not rows:
+        return f"<pre>{arg_text}</pre>"
+    
+    return f"<table class='arg-table'><thead><tr><th>オプション</th><th>説明</th></tr></thead><tbody>{''.join(rows)}</tbody></table>"
+
+# 各コマンドのHTML生成
+for _, row in df.iterrows():
+    command = str(row.get("コマンド", "")).strip()
+    summary = str(row.get("簡易説明", "")).strip()
+    detail = str(row.get("詳細", "")).strip()
+    usage = str(row.get("Usage", "")).strip()
+    example = str(row.get("実行例", "")).strip()
+    condition = str(row.get("条件など", "")).strip()
+    extra = str(row.get("補足情報", "")).strip()
+    args = str(row.get("引数", "")).strip()
+
+    args_table = parse_arguments(args)
+
+    html = HTML_TEMPLATE.format(
+        title=command, css_path=CSS_PATH,
+        command=command, summary=summary,
+        detail=detail, usage=usage, example=example,
+        condition=condition, args_table=args_table, extra=extra
+    )
+
+    filename = f"{command.replace('/', '_').replace(' ', '_')}.html"
+    (OUTPUT_DIR / filename).write_text(html, encoding="utf-8")
+
+print(f"{len(df)} ページを生成しました → {OUTPUT_DIR.resolve()}")

@@ -1,0 +1,74 @@
+import pandas as pd
+from pathlib import Path
+
+# ========= 設定 =========
+INPUT_FILE = "linux_commands.xlsx"   # or .csv
+OUTPUT_DIR = Path("output_pages")
+CSS_PATH = "../../style.css"
+# ========================
+
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+# Excel / CSV を読み込む
+if INPUT_FILE.endswith(".xlsx"):
+    df = pd.read_excel(INPUT_FILE)
+else:
+    df = pd.read_csv(INPUT_FILE)
+
+# 欄名の前後の空白を削除
+df.columns = [c.strip() for c in df.columns]
+
+HTML_TEMPLATE = """<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>{title}</title>
+<link rel="stylesheet" href="{css_path}">
+</head>
+<body>
+<h1>{command}</h1>
+
+<h2>簡易説明</h2>
+<p>{summary}</p>
+
+<h2>詳細</h2>
+<pre>{detail}</pre>
+
+<h2>Usage</h2>
+<pre><code>{usage}</code></pre>
+
+<h2>実行例</h2>
+<pre><code>{example}</code></pre>
+
+<h2>条件など</h2>
+<pre>{condition}</pre>
+
+<h2>補足情報</h2>
+<pre>{extra}</pre>
+
+<p><a href="index.html">Linuxトップに戻る</a></p>
+</body>
+</html>
+"""
+
+# 各行からHTMLを生成
+for _, row in df.iterrows():
+    command = str(row.get("コマンド", "")).strip()
+    summary = str(row.get("簡易説明", "")).strip().replace("\n", "<br>")
+    detail = str(row.get("詳細", "")).strip()
+    usage = str(row.get("Usage", "")).strip()
+    example = str(row.get("実行例", "")).strip()
+    condition = str(row.get("条件など", "")).strip()
+    extra = str(row.get("補足情報", "")).strip()
+
+    html = HTML_TEMPLATE.format(
+        title=command, css_path=CSS_PATH,
+        command=command, summary=summary,
+        detail=detail, usage=usage, example=example,
+        condition=condition, extra=extra
+    )
+
+    filename = f"{command.replace('/', '_').replace(' ', '_')}.html"
+    (OUTPUT_DIR / filename).write_text(html, encoding="utf-8")
+
+print(f"{len(df)} ページを生成しました → {OUTPUT_DIR.resolve()}")
