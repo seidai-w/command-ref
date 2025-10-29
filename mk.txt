@@ -1,0 +1,90 @@
+import pandas as pd
+import os
+from jinja2 import Template
+import html
+
+# HTMLテンプレート（引数表とコードブロック対応）
+html_template = """
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ command }}</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        h1, h2 { margin-top: 1em; }
+        table { border-collapse: collapse; width: 100%; margin-top: 1em; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #f0f0f0; }
+        pre { background-color: #f9f9f9; padding: 10px; border: 1px solid #ddd; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <h1>{{ command }}</h1>
+    <p><strong>概要:</strong> {{ summary }}</p>
+    <p><strong>詳細な説明:</strong> {{ description }}</p>
+
+    <h2>引数の説明</h2>
+    <table>
+        <tr><th>オプション</th><th>説明</th></tr>
+        {% for opt, desc in args %}
+        <tr><td>{{ opt }}</td><td>{{ desc }}</td></tr>
+        {% endfor %}
+    </table>
+
+    <h2>戻り値（出力）</h2>
+    <p>{{ output }}</p>
+
+    <h2>前提条件</h2>
+    <p>{{ prerequisites }}</p>
+
+    <h2>使用例</h2>
+    <pre>{{ example }}</pre>
+
+    <h2>制限事項</h2>
+    <p>{{ limitations }}</p>
+
+    <h2>その他ノウハウ</h2>
+    <p>{{ exnouhau }}</p>
+
+</body>
+</html>
+"""
+
+# Excel読み込み
+df = pd.read_excel(r"C:\Users\SeidaiWatanabe\Desktop\command-ref\tmplate_linux.xlsx")
+
+# 出力フォルダ
+os.makedirs("html_output", exist_ok=True)
+
+for _, row in df.iterrows():
+    # 引数の説明を1行ずつ分割し、タブで区切る
+    raw_args = str(row["引数の説明"]).splitlines()
+    args = []
+    for line in raw_args:
+        parts = line.split("\t")
+        if len(parts) == 2:
+            args.append((parts[0].strip(), parts[1].strip()))
+        elif len(parts) == 1:
+            args.append((parts[0].strip(), ""))
+        else:
+            args.append(("不明", line.strip()))
+
+    # 使用例をHTMLエスケープして整形
+    example = html.escape(str(row["使用例"]))
+
+    html_output = Template(html_template).render(
+        command=row["コマンド名"],
+        summary=row["概要"],
+        description=row["詳細な説明"],
+        args=args,
+        output=row.get("戻り値", ""),
+        prerequisites=row.get("前提条件", ""),
+        example=example,
+        limitations=row.get("制限事項", ""),
+        exnou=row.get("その他ノウハウ", "")
+    )
+
+    filename = f"html_output/{row['コマンド名'].strip()}.html"
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write(html_output)
